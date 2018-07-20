@@ -2,7 +2,9 @@
 
 #include <memory>
 #include <vector>
+#include <algorithm>
 #include "message.hpp"
+#include "listener.hpp"
 
 namespace po
 {
@@ -14,36 +16,35 @@ namespace po
 
     void pollMessages();
     void sendMessage(const Message& message);
-    void subscribe(const int& subscriber);
-    bool unsubscribe(const int& subscriber);
-    std::vector<int>& list();
+    void subscribe(Listener* subscriber);
+    void unsubscribe(Listener* subscriber);
+    std::vector<Listener*>& list();
   private:
     std::vector<Message> messages;
-    std::vector<int> subscribers;
+    std::vector<Listener*> subscribers;
   };
 
   void MessageBus::pollMessages()
   {
-    auto newmessages = std::make_shared<std::vector<Message>>(std::move(messages));
-    for (auto& x : subscribers)
+    auto new_messages = std::make_shared<std::vector<Message>>(std::move(messages));
+    for(auto& x : subscribers)
       {
-	//x = newmessages;
-	x = 1;
+	x->receive(new_messages);
       }
     
   }
 
-  void MessageBus::subscribe(const int& subscriber)
+  void MessageBus::subscribe(Listener* subscriber)
   {
     subscribers.push_back(subscriber);
   }
 
-  bool MessageBus::unsubscribe(const int& subscriber)
+  void MessageBus::unsubscribe(Listener* subscriber)
   {
-    return subscriber == !subscriber;
+    subscribers.erase(std::remove(subscribers.begin(), subscribers.end(), subscriber), subscribers.end()); 
   }
 
-  std::vector<int>& MessageBus::list()
+  std::vector<Listener*>& MessageBus::list()
   {
     return subscribers;
   }
