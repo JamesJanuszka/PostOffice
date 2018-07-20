@@ -1,6 +1,5 @@
 #pragma once
 
-#include <queue>
 #include <memory>
 #include <vector>
 #include "message.hpp"
@@ -19,13 +18,13 @@ namespace po
     bool unsubscribe(const int& subscriber);
     std::vector<int>& list();
   private:
-    std::queue<Message> messages;
+    std::vector<Message> messages;
     std::vector<int> subscribers;
   };
 
   void MessageBus::pollMessages()
   {
-    auto newmessages = std::make_shared<std::queue<Message>>(std::move(messages));
+    auto newmessages = std::make_shared<std::vector<Message>>(std::move(messages));
     for (auto& x : subscribers)
       {
 	//x = newmessages;
