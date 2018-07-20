@@ -12,7 +12,7 @@ namespace po
   {
   public:
     virtual ~MessageBus() = default;
-    MessageBus() = delete;
+    MessageBus() = default;
 
     void pollMessages();
     void sendMessage(const Message& message);
@@ -32,6 +32,11 @@ namespace po
 	x->receive(new_messages);
       }
     
+  }
+
+  void MessageBus::sendMessage(const Message& message)
+  {
+    messages.emplace_back(message);
   }
 
   void MessageBus::subscribe(Listener* subscriber)
